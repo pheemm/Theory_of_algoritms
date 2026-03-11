@@ -1,3 +1,5 @@
+import time
+
 def is_safe(v, selected_nodes, graph):
     if v in selected_nodes:
         return False
@@ -42,6 +44,11 @@ graph = {0 :[1],
 
 weights = [10, 1, 5, 15, 5, 1, 5, 1, 15, 10]
 
-target_B = 15
+target_B = 25
+
+start = time.perf_counter()
 
 print(can_p2_win([], 0, True))
+
+finish = time.perf_counter()
+print(f"Время{finish - start}")
