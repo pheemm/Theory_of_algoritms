@@ -1,46 +1,56 @@
-from collections import deque
+def dfs(sample):
+    for other, mark in checks[sample]:
+        current_type = groups[sample]
+        next_type = current_type ^ mark
 
-def check_consistency(n, constraints):
-    graph = [[] for _ in range(n + 1)]
-    for i, j, relation in constraints:
-        t = 0 if relation == "same" else 1
-        graph[i].append((j, t))
-        graph[j].append((i, t))
+        if groups[other] == -1:
+            groups[other] = next_type
 
-    color = [-1] * (n + 1)
+            result = dfs(other)
+            if result == False:
+                return False
+        else:
+            if groups[other] != next_type:
+                return False
 
-    for start in range(1, n + 1):
-        if color[start] != -1:
-            continue
-        color[start] = 0
-        q = deque([start])
+    return True
 
-        while q:
-            v = q.popleft()
-            for u, t in graph[v]:
-                need = color[v] ^ t
-                if color[u] == -1:
-                    color[u] = need
-                    q.append(u)
-                elif color[u] != need:
-                    return False, None
 
-    return True, color
+first_line = input().split()
+count_samples = int(first_line[0])
+count_checks = int(first_line[1])
 
-n = 5
-constraints = [
-    (1, 2, "same"),
-    (2, 3, "diff"),
-    (3, 4, "same"),
-    (4, 5, "diff"),
-    (1, 5, "diff")
-]
+checks = []
+for i in range(count_samples + 1):
+    checks.append([])
 
-ok, color = check_consistency(n, constraints)
+for i in range(count_checks):
+    row = input().split()
 
-if ok:
-    print("Оценки непротиворечивы")
-    for i in range(1, n + 1):
-        print(i, "A" if color[i] == 0 else "B")
+    left_sample = int(row[0])
+    right_sample = int(row[1])
+    mark = int(row[2])
+
+    checks[left_sample].append((right_sample, mark))
+    checks[right_sample].append((left_sample, mark))
+
+groups = []
+for i in range(count_samples + 1):
+    groups.append(-1)
+
+answer = True
+
+for sample in range(1, count_samples + 1):
+    if groups[sample] == -1:
+        groups[sample] = 0
+
+        result = dfs(sample)
+
+        if result == False:
+            answer = False
+            break
+
+if answer == True:
+    print("YES")
 else:
-    print("Оценки противоречивы")
+    print("NO")
